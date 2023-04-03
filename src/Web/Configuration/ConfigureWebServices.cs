@@ -1,4 +1,6 @@
-﻿using MediatR;
+﻿using Microsoft.eShopWeb.ApplicationCore.Interfaces;
+using Microsoft.eShopWeb.Infrastructure.Events;
+using Microsoft.eShopWeb.Infrastructure.Events.CAP;
 using Microsoft.eShopWeb.Web.Interfaces;
 using Microsoft.eShopWeb.Web.Services;
 
@@ -15,6 +17,13 @@ public static class ConfigureWebServices
         services.AddScoped<ICatalogItemViewModelService, CatalogItemViewModelService>();
         services.Configure<CatalogSettings>(configuration);
         services.AddScoped<ICatalogViewModelService, CachedCatalogViewModelService>();
+
+        services.AddSingleton<IMessageChannel, MessageChannel>();
+        // Manually implemented in memory event dispatcher
+        //services.AddSingleton<IEventDispatcher, InMemoryEventDispatcher>();
+        //services.AddHostedService<InMemoryEventDispatcherJob>();
+        // Event dispatcher based on CAP libriary. Supports InMemory, RabbitMQ and many more
+        services.AddSingleton<IEventDispatcher, CapEventDispatcher>();
 
         return services;
     }
